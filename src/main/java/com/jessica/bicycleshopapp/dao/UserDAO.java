@@ -82,7 +82,7 @@ public class UserDAO {
                 PreparedStatement ps = conn.prepareStatement(
                         "UPDATE USERS SET Username = ?, Password = ?, Role = ? WHERE UserID = ?"
                 );
-                String hashed = PasswordUtil.hash(user.getPassword());
+                String hashed = PasswordUtil.hashPasswordSHA256(user.getPassword());
                 ps.setString(1, user.getUsername());
                 ps.setString(2, hashed); // store hashed password
                 ps.setString(3, user.getRole());

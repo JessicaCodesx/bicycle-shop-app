@@ -15,7 +15,7 @@ public class AddUserServlet extends HttpServlet {
         String rawPassword = req.getParameter("password");
         String role = req.getParameter("role");
 
-        String hashedPassword = PasswordUtil.hash(rawPassword);
+        String hashedPassword = PasswordUtil.hashPasswordSHA256(rawPassword);
 
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(

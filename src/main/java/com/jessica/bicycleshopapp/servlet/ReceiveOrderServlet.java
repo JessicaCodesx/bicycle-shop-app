@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.sql.*;
 
 public class ReceiveOrderServlet extends HttpServlet {
+    @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
@@ -17,7 +18,7 @@ public class ReceiveOrderServlet extends HttpServlet {
             conn.setAutoCommit(false);
 
             PreparedStatement getOrder = conn.prepareStatement(
-                    "SELECT ProductID, Quantity FROM ORDERS WHERE OrderID = ?"
+                    "SELECT ProductID, Quantity FROM ORDERS WHERE OrderID = ? AND Received = FALSE"
             );
             getOrder.setInt(1, orderId);
             ResultSet rs = getOrder.executeQuery();
@@ -26,12 +27,18 @@ public class ReceiveOrderServlet extends HttpServlet {
                 int productId = rs.getInt("ProductID");
                 int quantity = rs.getInt("Quantity");
 
-                PreparedStatement updateInv = conn.prepareStatement(
+                PreparedStatement updateInventory = conn.prepareStatement(
                         "UPDATE INVENTORY SET Quantity = Quantity + ? WHERE ProductID = ?"
                 );
-                updateInv.setInt(1, quantity);
-                updateInv.setInt(2, productId);
-                updateInv.executeUpdate();
+                updateInventory.setInt(1, quantity);
+                updateInventory.setInt(2, productId);
+                updateInventory.executeUpdate();
+
+                PreparedStatement markReceived = conn.prepareStatement(
+                        "UPDATE ORDERS SET Received = TRUE WHERE OrderID = ?"
+                );
+                markReceived.setInt(1, orderId);
+                markReceived.executeUpdate();
 
                 conn.commit();
             }
@@ -40,6 +47,6 @@ public class ReceiveOrderServlet extends HttpServlet {
             e.printStackTrace();
         }
 
-        resp.sendRedirect("receive-order.jsp");
+        resp.sendRedirect("receive-orders.jsp");
     }
 }

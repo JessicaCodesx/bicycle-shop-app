@@ -13,7 +13,7 @@ public class LoginServlet extends HttpServlet {
             throws ServletException, IOException {
 
         String username = req.getParameter("username");
-        String password = PasswordUtil.hash(req.getParameter("password"));
+        String password = PasswordUtil.hashPasswordSHA256(req.getParameter("password"));
 
         UserDAO dao = new UserDAO();
         User user = dao.validateUser(username, password);
